@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String @id @default(cuid())
+  email     String @unique
+  password  String
+  city      String?
+  street    String?
+  home      String?
+  apartment String?
+  numbering String?
+  basket    Basket?
+}
+
+model Food {
+  category String 
+  id       String @id @default(cuid())
+  name     String
+  compound String
+  image    String?
+  price    Int
+  basketItems BasketItem[]
+}
+
+model Action {
+  id          String @id @default(cuid())
+  name        String
+  description String
+  image       String
+}
+
+model Basket {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+  items  BasketItem[]
+}
+
+model BasketItem {
+  id       String @id @default(cuid())
+  quantity Int    @default(1)
+  basketId String
+  basket   Basket @relation(fields: [basketId], references: [id])
+  foodId   String
+  food     Food   @relation(fields: [foodId], references: [id])
+}
