@@ -14,7 +14,7 @@ export const useFood = () => {
   return useQuery({
     queryKey: ['food'],
     queryFn: async () => {
-      const { data } = await axios.get<BackendResault[]>('http://localhost:3000/api/get-food');
+      const { data } = await axios.get<BackendResault[]>('/api/get-food');
       console.log(data, 'данные каталогов еды');
 
       return data;
