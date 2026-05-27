@@ -12,7 +12,7 @@ export const useReg = () => {
   return useMutation({
     mutationKey: ['reg'],
     mutationFn: async (data: any) => {
-      const { data: back } = await axios.post('http://localhost:3000/api/registration', data);
+      const { data: back } = await axios.post('/api/registration', data);
       console.log(back, 'данные юзера из хука регистрации:');
 
       return back;

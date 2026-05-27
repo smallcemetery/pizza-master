@@ -13,7 +13,7 @@ export const useAuth = () => {
     mutationKey: ['auth'],
     mutationFn: async (data: any) => {
       // Отправляем запрос на эндпоинт авторизации
-      const { data: back } = await axios.post('http://localhost:3000/api/authorization', data);
+      const { data: back } = await axios.post('/api/authorization', data);
       console.log(back, 'данные пользователя после авторизации:');
 
       return back;
