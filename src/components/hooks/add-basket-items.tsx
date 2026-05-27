@@ -13,7 +13,7 @@ export const addBusket = () => {
   return useMutation({
     mutationKey: ['addBasket'],
     mutationFn: async (foodId: string) => {
-      const { data } = await axios.post('http://localhost:3000/api/add-basket', { userId, foodId });
+      const { data } = await axios.post('/api/add-basket', { userId, foodId });
 
       return data;
     },
