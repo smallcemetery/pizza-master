@@ -3,17 +3,23 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { Actions } from './feature/actions';
 import { Food } from './feature/food';
+import { Stories } from './feature/stories';
 
 const Category = [
   {
     id: 1,
-    name: 'Food',
+    name: 'Еда',
     component: <Food />,
   },
   {
     id: 2,
-    name: 'Action',
+    name: 'Акции',
     component: <Actions />,
+  },
+  {
+    id: 3,
+    name: 'Истории',
+    component: <Stories />,
   },
 ];
 

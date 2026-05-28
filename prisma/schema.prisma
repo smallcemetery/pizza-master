@@ -8,15 +8,17 @@ datasource db {
 }
 
 model User {
-  id        String @id @default(cuid())
-  email     String @unique
+  id        String  @id @default(cuid())
+  email     String  @unique
   password  String
   city      String?
   street    String?
   home      String?
   apartment String?
   numbering String?
+  bonuses   Int     @default(0)
   basket    Basket?
+  orders    Order[]
 }
 
 model Food {
@@ -50,4 +52,44 @@ model BasketItem {
   basket   Basket @relation(fields: [basketId], references: [id])
   foodId   String
   food     Food   @relation(fields: [foodId], references: [id])
+}
+
+enum OrderStatus {
+  PENDING
+  PREPARING
+  DELIVERING
+  COMPLETED
+  CANCELLED
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+  status          OrderStatus @default(PENDING)
+  deliveryType    String
+  deliveryTime    String
+  paymentMethod   String
+  bonusUsed       Int         @default(0)
+  total           Int
+  address         String?
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
+}
+
+model OrderItem {
+  id       String @id @default(cuid())
+  orderId  String
+  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  foodId   String
+  foodName String
+  price    Int
+  quantity Int
+}
+
+model Story {
+  id        String   @id @default(cuid())
+  title     String
+  image     String
+  createdAt DateTime @default(now())
 }

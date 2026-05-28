@@ -1,4 +1,5 @@
 'use client';
+import { SnakeGameOverlay } from '@/components/game/snake-game';
 import { userAtom } from '@/store/user';
 import { useAtomValue } from 'jotai/react';
 import { useState } from 'react';
@@ -39,6 +40,7 @@ export const HomeModule = () => {
 
   return (
     <div className='flex flex-col items-center w-full bg-[#e8d8c9]'>
+      <SnakeGameOverlay />
       <div className='w-full h-max py-[40px] flex justify-center'>
         <ActionCarousel />
       </div>
