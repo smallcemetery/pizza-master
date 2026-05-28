@@ -97,6 +97,21 @@ export async function POST(req: Request) {
     return NextResponse.json({ order, user: updatedUser }, { status: 201 });
   } catch (error) {
     console.error('Ошибка при создании заказа:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Неизвестная ошибка';
+    const tableMissing =
+      message.includes('does not exist') ||
+      message.includes('Order') ||
+      (typeof error === 'object' && error !== null && 'code' in error && (error as { code: string }).code === 'P2021');
+
+    return NextResponse.json(
+      {
+        error: tableMissing
+          ? 'Таблица заказов не найдена в базе данных'
+          : 'Не удалось создать заказ',
+        details: message,
+        hint: tableMissing ? 'Выполните в терминале: npx prisma migrate deploy' : undefined,
+      },
+      { status: 500 },
+    );
   }
 }

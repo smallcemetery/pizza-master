@@ -5,7 +5,8 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { userId, foodId } = body;
+    const { userId, foodId, quantity: rawQty } = body;
+    const addQty = Math.max(1, Math.floor(Number(rawQty) || 1));
 
     // 1. ЖЕСТКАЯ ПРОВЕРКА: если foodId не пришел, стопаем всё
     if (!foodId) {
@@ -41,14 +42,14 @@ export async function POST(req: Request) {
       // Обновляем
       const updated = await prisma.basketItem.update({
         where: { id: existingItem.id },
-        data: { quantity: existingItem.quantity + 1 },
+        data: { quantity: existingItem.quantity + addQty },
       });
       return NextResponse.json(updated);
     } else {
       // СОЗДАЕМ НОВЫЙ (используем connect, чтобы Prisma не ругалась)
       const newItem = await prisma.basketItem.create({
         data: {
-          quantity: 1,
+          quantity: addQty,
           // Вместо basketId: basket.id пишем так, это надежнее:
           basket: { connect: { id: basket.id } },
           food: { connect: { id: foodId } },
