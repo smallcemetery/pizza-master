@@ -16,19 +16,32 @@ export const AboutModule = () => {
 
         <div className='grid grid-cols-1 md:grid-cols-2 gap-[20px]'>
           <div className='bg-[#FFF3E6] rounded-[15px] border border-black p-[20px] flex flex-col gap-[10px]'>
-            <div className='w-full h-[180px] rounded-[10px] bg-[#FDB4B4]/30 border border-dashed border-black flex items-center justify-center text-xs text-center px-4'>
-              {/* Вставьте своё фото */}
-              Место для фото команды
+            <div className='w-full h-[180px] rounded-[10px] overflow-hidden border border-black'>
+              <img
+                src="/team.png"
+                alt="Наша команда"
+                className='w-full h-full object-cover'
+              />
             </div>
             <h2 className='font-medium'>Наша команда</h2>
-            <p className='text-xs leading-5'>Пекари и курьеры, которые каждый день стараются сделать ваш вечер вкуснее.</p>
+            <p className='text-xs leading-5'>
+              Пекари и курьеры, которые каждый день стараются сделать ваш вечер вкуснее.
+            </p>
           </div>
           <div className='bg-[#FFF3E6] rounded-[15px] border border-black p-[20px] flex flex-col gap-[10px]'>
-            <div className='w-full h-[180px] rounded-[10px] bg-[#BFACC0]/30 border border-dashed border-black flex items-center justify-center text-xs text-center px-4'>
-              Место для фото пиццерии
+            {/* Блок с изображением */}
+            <div className='w-full h-[180px] rounded-[10px] overflow-hidden border border-black'>
+              <img
+                src="/mesto.png"
+                alt="Наша кухня"
+                className='w-full h-full object-cover'
+              />
             </div>
+
             <h2 className='font-medium'>Наша кухня</h2>
-            <p className='text-xs leading-5'>Тесто замешиваем ежедневно, соусы готовим сами, сыр — только качественный.</p>
+            <p className='text-xs leading-5'>
+              Тесто замешиваем ежедневно, соусы готовим сами, сыр — только качественный.
+            </p>
           </div>
         </div>
 

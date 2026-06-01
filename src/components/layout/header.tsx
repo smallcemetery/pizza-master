@@ -21,20 +21,13 @@ export const Header = () => {
   return (
     <header className='w-full min-h-[56px] sm:min-h-[60px] flex items-center justify-between gap-2 px-3 min-[375px]:px-4 min-[425px]:px-5 md:px-8 lg:px-12 xl:px-[100px] bg-[#e8d8c9] border-b border-black/10 sticky top-0 z-40'>
       <Link href='/home' className='flex items-center gap-2 min-w-0 shrink' onClick={() => setMenuOpen(false)}>
-        {!logoError ? (
-          <Image
-            src={LOGO_SRC}
-            alt=''
-            width={36}
-            height={36}
-            className='size-8 sm:size-9 object-contain shrink-0'
-            onError={() => setLogoError(true)}
+        <div className='w-9 h-9 shrink-0 overflow-hidden rounded-full'>
+          <img
+            src="/logo.png"
+            alt="Логотип"
+            className='w-full h-full object-cover'
           />
-        ) : (
-          <span className='text-xl shrink-0' aria-hidden>
-            🍕
-          </span>
-        )}
+        </div>
         <span className='font-medium text-sm min-[375px]:text-base truncate max-w-[120px] min-[425px]:max-w-none'>
           {SITE_NAME}
         </span>

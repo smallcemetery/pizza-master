@@ -27,11 +27,17 @@ export const ContactsModule = () => {
         </div>
 
         <div className='bg-[#FFF3E6] rounded-[15px] border border-black p-[20px]'>
-          <div className='w-full h-[250px] rounded-[10px] bg-[#e8d8c9] border border-dashed border-black flex items-center justify-center text-xs text-center px-4'>
-            {/* Вставьте карту или фото офиса */}
-            Место для карты или фото
+          {/* Контейнер для картинки с ограничением высоты */}
+          <div className='w-full h-[250px] rounded-[10px] overflow-hidden border border-black'>
+            <img
+              src="/kitchen.png"
+              alt="Наша кухня"
+              className='w-full h-full object-cover'
+            />
           </div>
-          <p className='text-xs mt-[10px] text-center'>Приезжайте в гости — угощаем чаем, пока готовится заказ!</p>
+          <p className='text-xs mt-[10px] text-center'>
+            Приезжайте в гости — угощаем чаем, пока готовится заказ!
+          </p>
         </div>
       </div>
     </div>

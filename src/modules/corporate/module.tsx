@@ -28,8 +28,12 @@ export const CorporateModule = () => {
             <li>Брендирование упаковки по запросу</li>
           </ul>
 
-          <div className='w-full h-[200px] rounded-[10px] bg-[#FDB4B4]/20 border border-dashed border-black flex items-center justify-center text-xs text-center px-4 mb-[25px]'>
-            Место для фото корпоративного кейтеринга
+          <div className='w-full h-[200px] rounded-[10px] overflow-hidden border border-black mb-[25px]'>
+            <img
+              src="/op.png"
+              alt="Корпоративный кейтеринг"
+              className='w-full h-full object-cover'
+            />
           </div>
         </div>
 
