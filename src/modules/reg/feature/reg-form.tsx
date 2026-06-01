@@ -19,16 +19,16 @@ const Inputs: Inputs[] = [
   {
     id: 1,
     name: 'email',
-    desc: 'enter your email for create accaunt.',
-    placeholder: 'enter your email',
+    desc: 'введите ваш адрес электронной почты для создания аккаунта.',
+    placeholder: 'введите ваш адрес ',
     label: 'Email',
   },
   {
     id: 2,
     name: 'password',
-    desc: 'enter yout password for create accaunt.',
-    placeholder: 'enter your password',
-    label: 'Password',
+    desc: 'введите ваш пароль для создания аккаунта.',
+    placeholder: 'введите ваш пароль',
+    label: 'Пароль',
   },
 ];
 
