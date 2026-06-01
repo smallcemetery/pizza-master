@@ -1,4 +1,5 @@
 'use client';
+import { useSyncUser } from '@/hooks/use-sync-user';
 import { profileAvatarAtom } from '@/store/profile-avatar';
 import { userAtom } from '@/store/user';
 import { useAtom, useAtomValue } from 'jotai/react';
@@ -26,12 +27,11 @@ const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
 
 export const ProfileModule = () => {
   const user = useAtomValue(userAtom);
+  const { bonuses } = useSyncUser({ refetchInterval: 15_000 });
   const [avatar, setAvatar] = useAtom(profileAvatarAtom);
   const fileRef = useRef<HTMLInputElement>(null);
   const { data: orders, isLoading: ordersLoading } = useOrders();
   const { data: actions, isLoading: actionsLoading } = useActions();
-
-  const bonuses = user?.bonuses ?? 0;
   const addressParts = [user?.city, user?.street, user?.home, user?.apartment].filter(Boolean);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {

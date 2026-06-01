@@ -2,6 +2,7 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useSyncUser } from '@/hooks/use-sync-user';
 import { showSnakeGameAtom } from '@/store/game';
 import { userAtom } from '@/store/user';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -18,6 +19,7 @@ const DELIVERY_TIMES = ['Как можно скорее', '12:00–13:00', '13:0
 
 export const BasketModule = () => {
   const user = useAtomValue(userAtom);
+  const { bonuses: syncedBonuses } = useSyncUser();
   const setUser = useSetAtom(userAtom);
   const setShowSnake = useSetAtom(showSnakeGameAtom);
   const router = useRouter();
@@ -44,7 +46,8 @@ export const BasketModule = () => {
 
   const subtotal =
     data?.items?.reduce((sum: number, item: any) => sum + item.food.price * item.quantity, 0) ?? 0;
-  const maxBonus = Math.min(user?.bonuses ?? 0, subtotal);
+  const availableBonuses = syncedBonuses ?? user?.bonuses ?? 0;
+  const maxBonus = Math.min(availableBonuses, subtotal);
   const appliedBonus = useBonuses ? Math.min(bonusAmount, maxBonus) : 0;
   const total = Math.max(0, subtotal - appliedBonus);
 
@@ -248,11 +251,11 @@ export const BasketModule = () => {
               {method === 'bonus' && 'Списать бонусы'}
             </label>
           ))}
-          {(paymentMethod === 'bonus' || useBonuses) && (user?.bonuses ?? 0) > 0 && (
+          {(paymentMethod === 'bonus' || useBonuses) && availableBonuses > 0 && (
             <div className='mt-1 pl-1'>
               <label className='flex items-center gap-2 text-xs mb-2'>
                 <input type='checkbox' checked={useBonuses} onChange={(e) => setUseBonuses(e.target.checked)} />
-                Использовать бонусы (доступно: {user?.bonuses ?? 0})
+                Использовать бонусы (доступно: {availableBonuses})
               </label>
               {useBonuses && (
                 <Input

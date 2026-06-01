@@ -12,6 +12,7 @@ export const useOrders = () => {
       return data;
     },
     enabled: !!user?.id,
+    refetchInterval: 30_000,
   });
 };
 

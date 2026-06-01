@@ -1,4 +1,5 @@
 import { prisma } from '@/shared/utils/db';
+import { getAutoOrderStatus } from '@/shared/utils/order-status';
 import { NextResponse } from 'next/server';
 
 export async function GET(req: Request) {
@@ -15,6 +16,19 @@ export async function GET(req: Request) {
       include: { items: true },
       orderBy: { createdAt: 'desc' },
     });
+
+    await Promise.all(
+      orders.map(async (order) => {
+        const nextStatus = getAutoOrderStatus(order.createdAt, order.status);
+        if (nextStatus !== order.status) {
+          await prisma.order.update({
+            where: { id: order.id },
+            data: { status: nextStatus },
+          });
+          order.status = nextStatus;
+        }
+      }),
+    );
 
     return NextResponse.json(orders);
   } catch (error) {

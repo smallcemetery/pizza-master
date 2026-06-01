@@ -16,6 +16,16 @@ export async function PATCH(req: Request) {
     const user = await prisma.user.update({
       where: { id: userId },
       data: { bonuses: { increment: bonusToAdd } },
+      select: {
+        id: true,
+        email: true,
+        city: true,
+        street: true,
+        home: true,
+        apartment: true,
+        numbering: true,
+        bonuses: true,
+      },
     });
 
     return NextResponse.json({ user, added: bonusToAdd });

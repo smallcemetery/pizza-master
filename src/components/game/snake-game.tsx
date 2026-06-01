@@ -10,6 +10,7 @@ const GRID = 16;
 const CELL = 18;
 const MAX_BONUS = 50;
 const TICK_MS = 140;
+const SWIPE_THRESHOLD = 28;
 
 type Point = { x: number; y: number };
 
@@ -20,6 +21,26 @@ const randomFood = (snake: Point[]): Point => {
   } while (snake.some((s) => s.x === p.x && s.y === p.y));
   return p;
 };
+
+const DirButton = ({
+  label,
+  onPress,
+  className = '',
+}: {
+  label: string;
+  onPress: () => void;
+  className?: string;
+}) => (
+  <button
+    type='button'
+    onPointerDown={(e) => {
+      e.preventDefault();
+      onPress();
+    }}
+    className={`size-11 sm:size-12 border-2 border-black bg-white text-lg active:bg-[#FDB4B4]/40 touch-manipulation select-none ${className}`}>
+    {label}
+  </button>
+);
 
 export const SnakeGameOverlay = () => {
   const show = useAtomValue(showSnakeGameAtom);
@@ -35,6 +56,8 @@ export const SnakeGameOverlay = () => {
   const [saved, setSaved] = useState(false);
   const dirRef = useRef(dir);
   const foodRef = useRef(food);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     foodRef.current = food;
@@ -43,6 +66,12 @@ export const SnakeGameOverlay = () => {
   useEffect(() => {
     dirRef.current = dir;
   }, [dir]);
+
+  const setDirection = useCallback((next: Point) => {
+    const d = dirRef.current;
+    if (next.x !== 0 && d.x === 0) setDir(next);
+    if (next.y !== 0 && d.y === 0) setDir(next);
+  }, []);
 
   const reset = useCallback(() => {
     const start = [{ x: 4, y: 8 }, { x: 3, y: 8 }];
@@ -61,18 +90,65 @@ export const SnakeGameOverlay = () => {
   }, [show, reset]);
 
   useEffect(() => {
+    if (!show) return;
+
+    const prevOverflow = document.body.style.overflow;
+    const prevTouchAction = document.body.style.touchAction;
+    const prevPosition = document.body.style.position;
+    const scrollY = window.scrollY;
+
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    document.body.style.top = `-${scrollY}px`;
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.body.style.touchAction = prevTouchAction;
+      document.body.style.position = prevPosition;
+      document.body.style.width = '';
+      document.body.style.top = '';
+      window.scrollTo(0, scrollY);
+    };
+  }, [show]);
+
+  useEffect(() => {
+    if (!show) return;
+
+    const preventScrollKeys = (e: KeyboardEvent) => {
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+        e.preventDefault();
+      }
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (overlayRef.current?.contains(e.target as Node)) {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener('keydown', preventScrollKeys, { passive: false });
+    document.addEventListener('touchmove', onTouchMove, { passive: false });
+
+    return () => {
+      window.removeEventListener('keydown', preventScrollKeys);
+      document.removeEventListener('touchmove', onTouchMove);
+    };
+  }, [show]);
+
+  useEffect(() => {
     if (!show || gameOver) return;
 
     const onKey = (e: KeyboardEvent) => {
-      const d = dirRef.current;
-      if (e.key === 'ArrowUp' && d.y === 0) setDir({ x: 0, y: -1 });
-      if (e.key === 'ArrowDown' && d.y === 0) setDir({ x: 0, y: 1 });
-      if (e.key === 'ArrowLeft' && d.x === 0) setDir({ x: -1, y: 0 });
-      if (e.key === 'ArrowRight' && d.x === 0) setDir({ x: 1, y: 0 });
+      if (e.key === 'ArrowUp') setDirection({ x: 0, y: -1 });
+      if (e.key === 'ArrowDown') setDirection({ x: 0, y: 1 });
+      if (e.key === 'ArrowLeft') setDirection({ x: -1, y: 0 });
+      if (e.key === 'ArrowRight') setDirection({ x: 1, y: 0 });
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [show, gameOver]);
+  }, [show, gameOver, setDirection]);
 
   useEffect(() => {
     if (!show || gameOver) return;
@@ -104,13 +180,35 @@ export const SnakeGameOverlay = () => {
     return () => clearInterval(id);
   }, [show, gameOver]);
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0];
+    touchStartRef.current = { x: t.clientX, y: t.clientY };
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const start = touchStartRef.current;
+    if (!start) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    touchStartRef.current = null;
+
+    if (Math.abs(dx) < SWIPE_THRESHOLD && Math.abs(dy) < SWIPE_THRESHOLD) return;
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+      setDirection(dx > 0 ? { x: 1, y: 0 } : { x: -1, y: 0 });
+    } else {
+      setDirection(dy > 0 ? { x: 0, y: 1 } : { x: 0, y: -1 });
+    }
+  };
+
   const saveBonuses = async () => {
     if (!user?.id || saved) return;
     const earned = Math.min(score, MAX_BONUS);
     if (earned <= 0) return;
     try {
       const { data } = await axios.patch('/api/user/bonuses', { userId: user.id, earned });
-      setUser({ ...user, bonuses: data.user.bonuses });
+      setUser((prev: typeof user) => (prev ? { ...prev, bonuses: data.user.bonuses } : prev));
       setSaved(true);
     } catch {
       console.error('Не удалось сохранить бонусы');
@@ -127,17 +225,21 @@ export const SnakeGameOverlay = () => {
   const earned = Math.min(score, MAX_BONUS);
 
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
-      <div className='bg-[#FFF3E6] border-2 border-black rounded-[20px] p-[25px] max-w-[400px] w-full shadow-grow'>
+    <div
+      ref={overlayRef}
+      className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overscroll-none touch-none'
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}>
+      <div className='bg-[#FFF3E6] border-2 border-black rounded-[20px] p-[20px] sm:p-[25px] max-w-[400px] w-full shadow-grow max-h-[95vh] overflow-y-auto overscroll-contain'>
         <h2 className='text-lg text-center mb-[5px]'>🍕 Змейка-бонусы</h2>
-        <p className='text-xs text-center mb-[15px] text-gray-600'>
-          Собирайте пиццу стрелками! Максимум {MAX_BONUS} бонусов
+        <p className='text-xs text-center mb-[12px] text-gray-600'>
+          Свайпайте по полю или кнопками ниже. Максимум {MAX_BONUS} бонусов
         </p>
 
         <svg
           width={GRID * CELL}
           height={GRID * CELL}
-          className='mx-auto block border-2 border-black rounded-[8px] bg-[#e8d8c9]'>
+          className='mx-auto block border-2 border-black rounded-[8px] bg-[#e8d8c9] touch-none'>
           {snake.map((s, i) => (
             <rect
               key={`s-${i}-${s.x}-${s.y}`}
@@ -155,6 +257,15 @@ export const SnakeGameOverlay = () => {
             🍕
           </text>
         </svg>
+
+        <div className='mt-4 grid grid-cols-3 gap-1.5 w-fit mx-auto sm:hidden'>
+          <div />
+          <DirButton label='↑' onPress={() => setDirection({ x: 0, y: -1 })} />
+          <div />
+          <DirButton label='←' onPress={() => setDirection({ x: -1, y: 0 })} />
+          <DirButton label='↓' onPress={() => setDirection({ x: 0, y: 1 })} />
+          <DirButton label='→' onPress={() => setDirection({ x: 1, y: 0 })} />
+        </div>
 
         <p className='text-center mt-[12px] text-sm'>
           Бонусы: <strong>{earned}</strong> / {MAX_BONUS}
