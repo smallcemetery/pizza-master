@@ -1,10 +1,12 @@
 'use client';
+import { Button } from '@/components/ui/button';
 import { useSyncUser } from '@/hooks/use-sync-user';
 import { profileAvatarAtom } from '@/store/profile-avatar';
 import { userAtom } from '@/store/user';
 import { useAtom, useAtomValue } from 'jotai/react';
 import Link from 'next/link';
 import { useRef } from 'react';
+import { useLogout } from './hooks/use-logout';
 import { useActions, useOrders } from './hooks/use-profile';
 
 const STATUS_LABELS: Record<string, string> = {
@@ -32,6 +34,7 @@ export const ProfileModule = () => {
   const fileRef = useRef<HTMLInputElement>(null);
   const { data: orders, isLoading: ordersLoading } = useOrders();
   const { data: actions, isLoading: actionsLoading } = useActions();
+  const logout = useLogout();
   const addressParts = [user?.city, user?.street, user?.home, user?.apartment].filter(Boolean);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,12 +99,22 @@ export const ProfileModule = () => {
             {addressParts.length > 0 && (
               <p className='text-xs mb-3 line-clamp-2'>Адрес: {addressParts.join(', ')}</p>
             )}
-            <div className='inline-flex items-center gap-3 bg-[#FFF3E6] border border-black rounded-full px-4 py-2'>
-              <span className='text-xl'>🍕</span>
-              <div>
-                <p className='text-xs text-gray-500'>Бонусные баллы</p>
-                <p className='text-lg md:text-xl font-medium'>{bonuses}</p>
+            <div className='flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4'>
+              <div className='inline-flex items-center gap-3 bg-[#FFF3E6] border border-black rounded-full px-4 py-2'>
+                <span className='text-xl'>🍕</span>
+                <div>
+                  <p className='text-xs text-gray-500'>Бонусные баллы</p>
+                  <p className='text-lg md:text-xl font-medium'>{bonuses}</p>
+                </div>
               </div>
+              <Button
+                type='button'
+                variant='outline'
+                disabled={logout.isPending}
+                onClick={() => logout.mutate()}
+                className='border border-black bg-white text-black cursor-pointer hover:bg-red-50 shrink-0'>
+                {logout.isPending ? 'Выход…' : 'Выйти'}
+              </Button>
             </div>
           </div>
         </div>
