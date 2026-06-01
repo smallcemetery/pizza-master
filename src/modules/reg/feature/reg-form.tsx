@@ -75,7 +75,7 @@ export const RegForm = () => {
         />
       ))}
       <Button type='submit' className='w-[200px] px-[15px] h-[35px] border border-black cursor-pointer hover:border-2'>
-        Create
+        Создать
       </Button>
     </form>
   );
