@@ -1,5 +1,5 @@
 /** Название пиццерии — отображается в шапке сайта */
-export const SITE_NAME = 'Pizza Master';
+export const SITE_NAME = 'Why Pizza';
 
 /**
  * Логотип: положите файл logo.png (или logo.svg) в папку public/
