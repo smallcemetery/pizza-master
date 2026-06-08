@@ -1,3 +1,6 @@
+import team from '@/assets/team.png'
+import mesto from '@/assets/mesto.png'
+
 export const AboutModule = () => {
   return (
     <div className='w-full min-h-screen bg-[#e8d8c9] py-[50px] px-[100px]'>
@@ -18,7 +21,7 @@ export const AboutModule = () => {
           <div className='bg-[#FFF3E6] rounded-[15px] border border-black p-[20px] flex flex-col gap-[10px]'>
             <div className='w-full h-[180px] rounded-[10px] overflow-hidden border border-black'>
               <img
-                src="/team.png"
+                src={team.src}
                 alt="Наша команда"
                 className='w-full h-full object-cover'
                 loading="eager" 
@@ -33,7 +36,7 @@ export const AboutModule = () => {
             {/* Блок с изображением */}
             <div className='w-full h-[180px] rounded-[10px] overflow-hidden border border-black'>
               <img
-                src="/mesto.png"
+                src={mesto.src}
                 alt="Наша кухня"
                 className='w-full h-full object-cover'
                 loading="eager" 

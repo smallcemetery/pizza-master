@@ -1,3 +1,5 @@
+import kitchen from '@/assets/kitchen.png'
+
 export const ContactsModule = () => {
   return (
     <div className='w-full min-h-screen bg-[#e8d8c9] py-[50px] px-[100px]'>
@@ -30,7 +32,7 @@ export const ContactsModule = () => {
           {/* Контейнер для картинки с ограничением высоты */}
           <div className='w-full h-[250px] rounded-[10px] overflow-hidden border border-black'>
             <img
-              src="/kitchen.png"
+              src={kitchen.src}
               alt="Наша кухня"
               className='w-full h-full object-cover'
               loading="eager" 

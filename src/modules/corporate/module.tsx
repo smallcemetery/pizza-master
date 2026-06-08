@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useState } from 'react';
+import op from '@/assets/op.png'
 
 export const CorporateModule = () => {
   const [sent, setSent] = useState(false);
@@ -30,7 +31,7 @@ export const CorporateModule = () => {
 
           <div className='w-full h-[200px] rounded-[10px] overflow-hidden border border-black mb-[25px]'>
             <img
-              src="/op.png"
+              src={op.src}
               alt="Корпоративный кейтеринг"
               className='w-full h-full object-cover'
               loading="eager" 
