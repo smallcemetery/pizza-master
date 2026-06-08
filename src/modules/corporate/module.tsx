@@ -33,6 +33,7 @@ export const CorporateModule = () => {
               src="/op.png"
               alt="Корпоративный кейтеринг"
               className='w-full h-full object-cover'
+              loading="eager" 
             />
           </div>
         </div>

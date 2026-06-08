@@ -33,6 +33,7 @@ export const ContactsModule = () => {
               src="/kitchen.png"
               alt="Наша кухня"
               className='w-full h-full object-cover'
+              loading="eager" 
             />
           </div>
           <p className='text-xs mt-[10px] text-center'>

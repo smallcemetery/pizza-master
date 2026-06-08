@@ -18,9 +18,10 @@ export const AboutModule = () => {
           <div className='bg-[#FFF3E6] rounded-[15px] border border-black p-[20px] flex flex-col gap-[10px]'>
             <div className='w-full h-[180px] rounded-[10px] overflow-hidden border border-black'>
               <img
-                src="public/team.png"
+                src="/team.png"
                 alt="Наша команда"
                 className='w-full h-full object-cover'
+                loading="eager" 
               />
             </div>
             <h2 className='font-medium'>Наша команда</h2>
@@ -35,6 +36,7 @@ export const AboutModule = () => {
                 src="/mesto.png"
                 alt="Наша кухня"
                 className='w-full h-full object-cover'
+                loading="eager" 
               />
             </div>
 
