@@ -12,7 +12,7 @@ import { Trash } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import { useBasket } from './hooks/use-basket';
+import { useBasketData } from './hooks/use-basket-data';
 import { useRemoveBasketItem } from './hooks/use-remove-basket';
 
 const DELIVERY_TIMES = ['Как можно скорее', '12:00–13:00', '13:00–14:00', '18:00–19:00', '19:00–20:00'];
@@ -24,7 +24,7 @@ export const BasketModule = () => {
   const setShowSnake = useSetAtom(showSnakeGameAtom);
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { data, isLoading } = useBasket();
+  const { data, isLoading, isGuest } = useBasketData();
   const removeItem = useRemoveBasketItem();
 
   const [deliveryType, setDeliveryType] = useState<'courier' | 'pickup'>('courier');
@@ -105,7 +105,7 @@ export const BasketModule = () => {
       return;
     }
     if (!user?.id) {
-      setCheckoutError('Войдите в аккаунт заново');
+      router.push(`/authorization?next=${encodeURIComponent('/basket')}`);
       return;
     }
     if (deliveryType === 'courier') {
@@ -130,6 +130,19 @@ export const BasketModule = () => {
     <div className='w-full min-h-screen bg-[#e8d8c9] flex flex-col lg:flex-row px-3 min-[375px]:px-4 min-[425px]:px-5 md:px-8 lg:px-12 xl:px-[100px] gap-5 md:gap-8 py-6 md:py-10'>
       <div className='flex-1 flex flex-col gap-4 min-w-0'>
         <h1 className='text-lg md:text-xl'>Корзина</h1>
+        {isGuest && (data?.items?.length ?? 0) > 0 && (
+          <p className='text-xs sm:text-sm bg-amber-50 border border-amber-300 rounded-lg px-3 py-2'>
+            Вы просматриваете корзину как гость. Для оформления заказа{' '}
+            <Link href='/authorization?next=%2Fbasket' className='underline font-medium'>
+              войдите
+            </Link>{' '}
+            или{' '}
+            <Link href='/registration?next=%2Fbasket' className='underline font-medium'>
+              зарегистрируйтесь
+            </Link>
+            .
+          </p>
+        )}
         {!data?.items?.length ? (
           <div className='bg-white rounded-[15px] border border-black p-6 md:p-8 text-center'>
             <p className='text-sm mb-4'>Корзина пуста</p>
@@ -291,7 +304,11 @@ export const BasketModule = () => {
             disabled={!data?.items?.length || placeOrder.isPending}
             onClick={handleCheckout}
             className='w-full mt-4 border border-black cursor-pointer hover:bg-[#FDB4B4]/40 disabled:opacity-50'>
-            {placeOrder.isPending ? 'Оформляем...' : 'Оформить заказ'}
+            {!user?.id
+              ? 'Войти для оформления'
+              : placeOrder.isPending
+                ? 'Оформляем...'
+                : 'Оформить заказ'}
           </Button>
           {(checkoutError || placeOrder.isError) && (
             <p className='text-xs text-red-600 mt-2 break-words'>{checkoutError || 'Ошибка оформления'}</p>

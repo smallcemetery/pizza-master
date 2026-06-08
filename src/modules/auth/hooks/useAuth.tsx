@@ -1,32 +1,39 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+'use client';
+import { mergeGuestBasketToServer } from '@/shared/utils/merge-guest-basket';
+import { guestBasketAtom } from '@/store/guest-basket';
 import { userAtom } from '@/store/user';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { useSetAtom } from 'jotai/react';
+import { useAtom, useSetAtom } from 'jotai/react';
 import { useRouter } from 'next/navigation';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const useAuth = () => {
   const router = useRouter();
   const setUser = useSetAtom(userAtom);
+  const [guestBasket, setGuestBasket] = useAtom(guestBasketAtom);
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['auth'],
     mutationFn: async (data: any) => {
-      // Отправляем запрос на эндпоинт авторизации
       const { data: back } = await axios.post('/api/authorization', data);
-      console.log(back, 'данные пользователя после авторизации:');
-
       return back;
     },
-    onSuccess: (back) => {
-      // Кука уже установлена сервером в ответе (Set-Cookie)
-      // Перенаправляем на главную
+    onSuccess: async (back) => {
       setUser(back.user);
-      router.push('/home');
-      router.refresh(); // Важно, чтобы middleware пересчитала доступ
+
+      if (guestBasket.length > 0) {
+        await mergeGuestBasketToServer(back.user.id, guestBasket);
+        setGuestBasket([]);
+        queryClient.invalidateQueries({ queryKey: ['basket', back.user.id] });
+      }
+
+      const next = new URLSearchParams(window.location.search).get('next') || '/home';
+      router.push(next);
+      router.refresh();
     },
     onError: (error: any) => {
-      // Выводим ошибку (например, "Неверный пароль")
       console.log(error.response?.data?.message || 'Ошибка при входе');
     },
   });
