@@ -30,7 +30,7 @@ export const ContactsModule = () => {
           {/* Контейнер для картинки с ограничением высоты */}
           <div className='w-full h-[250px] rounded-[10px] overflow-hidden border border-black'>
             <img
-              src="public/kitchen.png"
+              src="/kitchen.png"
               alt="Наша кухня"
               className='w-full h-full object-cover'
             />

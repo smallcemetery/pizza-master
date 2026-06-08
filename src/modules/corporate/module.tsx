@@ -30,7 +30,7 @@ export const CorporateModule = () => {
 
           <div className='w-full h-[200px] rounded-[10px] overflow-hidden border border-black mb-[25px]'>
             <img
-              src="public/op.png"
+              src="/op.png"
               alt="Корпоративный кейтеринг"
               className='w-full h-full object-cover'
             />

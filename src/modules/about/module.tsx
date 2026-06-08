@@ -32,7 +32,7 @@ export const AboutModule = () => {
             {/* Блок с изображением */}
             <div className='w-full h-[180px] rounded-[10px] overflow-hidden border border-black'>
               <img
-                src="public/mesto.png"
+                src="/mesto.png"
                 alt="Наша кухня"
                 className='w-full h-full object-cover'
               />
