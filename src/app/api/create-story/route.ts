@@ -1,3 +1,4 @@
+import { requireAdminApi } from '@/shared/utils/require-admin-api';
 import { prisma } from '@/shared/utils/db';
 import { normalizeSupabaseImageUrl } from '@/shared/utils/supabase-image';
 import { createClient } from '@supabase/supabase-js';
@@ -11,6 +12,9 @@ const supabase = createClient(
 const BUCKET = 'food_images';
 
 export async function POST(req: Request) {
+  const forbidden = await requireAdminApi();
+  if (forbidden) return forbidden;
+
   try {
     const formData = await req.formData();
     const title = formData.get('title') as string;

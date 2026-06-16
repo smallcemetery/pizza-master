@@ -21,7 +21,7 @@ export const StoryViewer = ({ stories, initialIndex = 0, onClose }: Props) => {
   const withImages = stories.filter((s) => s.image);
   const items = withImages.length ? withImages : stories;
 
-  const [index, setIndex] = useState(initialIndex);
+  const [index, setIndex] = useState(() => Math.min(initialIndex, Math.max(items.length - 1, 0)));
   const [progress, setProgress] = useState(0);
   const [paused, setPaused] = useState(false);
   const touchStartX = useRef<number | null>(null);
@@ -113,9 +113,9 @@ export const StoryViewer = ({ stories, initialIndex = 0, onClose }: Props) => {
   };
 
   return (
-    <div className='fixed inset-0 z-[100] bg-black flex items-center justify-center'>
+    <div className='fixed inset-0 z-[100] bg-black flex items-center justify-center p-0 sm:p-4'>
       <div
-        className='relative w-full h-full max-w-[430px] mx-auto sm:max-h-[92vh] sm:rounded-2xl sm:overflow-hidden sm:border sm:border-white/20'
+        className='relative w-full h-full max-w-[430px] mx-auto sm:max-h-[92vh] sm:rounded-2xl sm:overflow-hidden bg-black sm:border sm:border-white/20'
         onMouseDown={() => setPaused(true)}
         onMouseUp={() => {
           setPaused(false);
@@ -124,7 +124,6 @@ export const StoryViewer = ({ stories, initialIndex = 0, onClose }: Props) => {
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onClick={handleTap}>
-        {/* Progress bars */}
         <div className='absolute top-0 left-0 right-0 z-20 flex gap-1 px-2 pt-2 sm:pt-3'>
           {items.map((_, i) => (
             <div key={i} className='flex-1 h-[2px] sm:h-[3px] bg-white/30 rounded-full overflow-hidden'>
@@ -138,15 +137,14 @@ export const StoryViewer = ({ stories, initialIndex = 0, onClose }: Props) => {
           ))}
         </div>
 
-        {/* Header */}
         <div className='absolute top-6 sm:top-8 left-0 right-0 z-20 flex items-center justify-between px-3 sm:px-4'>
-          <div className='flex items-center gap-2 min-w-0'>
-            <div className='size-8 sm:size-9 rounded-full border-2 border-[#FDB4B4] p-[2px] shrink-0'>
-              <div className='w-full h-full rounded-full bg-[#FDB4B4] flex items-center justify-center text-sm'>
+          <div className='flex items-center gap-2 min-w-0 flex-1'>
+            <div className='size-7 sm:size-9 rounded-full border-2 border-[#FDB4B4] p-[2px] shrink-0'>
+              <div className='w-full h-full rounded-full bg-[#FDB4B4] flex items-center justify-center text-xs sm:text-sm'>
                 🍕
               </div>
             </div>
-            <span className='text-white text-xs sm:text-sm font-medium truncate drop-shadow'>
+            <span className='text-white text-[11px] sm:text-sm font-medium truncate drop-shadow'>
               {current.title}
             </span>
           </div>
@@ -156,32 +154,30 @@ export const StoryViewer = ({ stories, initialIndex = 0, onClose }: Props) => {
               e.stopPropagation();
               onClose();
             }}
-            className='text-white p-1.5 shrink-0 cursor-pointer hover:bg-white/10 rounded-full'
+            className='text-white p-1 shrink-0 cursor-pointer hover:bg-white/10 rounded-full'
             aria-label='Закрыть'>
-            <X size={22} weight='bold' />
+            <X size={20} weight='bold' />
           </button>
         </div>
 
-        {/* Story image */}
-        <div className='absolute inset-0 bg-[#1a1a1a]'>
+        <div className='absolute inset-0 flex items-center justify-center pt-12 pb-14 px-3 sm:px-4 bg-[#111]'>
           {current.image ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={current.image}
               alt={current.title}
-              className='w-full h-full object-cover'
+              className='max-w-full max-h-full w-auto h-auto object-contain'
               referrerPolicy='no-referrer'
             />
           ) : (
-            <div className='w-full h-full flex flex-col items-center justify-center gap-4 text-white'>
-              <span className='text-6xl'>🍕</span>
-              <p className='text-lg px-4 text-center'>{current.title}</p>
+            <div className='flex flex-col items-center justify-center gap-3 text-white px-4'>
+              <span className='text-5xl sm:text-6xl'>🍕</span>
+              <p className='text-sm sm:text-lg text-center'>{current.title}</p>
             </div>
           )}
-          <div className='absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/70 to-transparent pointer-events-none' />
         </div>
 
-        <p className='absolute bottom-4 sm:bottom-6 left-3 right-3 z-20 text-white text-sm sm:text-base font-medium drop-shadow line-clamp-2'>
+        <p className='absolute bottom-3 sm:bottom-5 left-3 right-3 z-20 text-white text-[11px] sm:text-sm font-medium drop-shadow line-clamp-2 text-center'>
           {current.title}
         </p>
       </div>

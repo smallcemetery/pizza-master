@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { applySessionCookies } from '@/shared/utils/auth-cookies';
+import { sanitizeUser } from '@/shared/utils/admin';
 import { NextResponse } from 'next/server';
 import { authController } from './controller';
 
@@ -7,21 +9,21 @@ export async function POST(request: Request) {
     const body = await request.json();
     const result = await authController.auth(body);
 
-    const response = NextResponse.json(result, { status: 200 });
+    const response = NextResponse.json(
+      {
+        ...result,
+        user: sanitizeUser(result.user),
+      },
+      { status: 200 },
+    );
 
-    // Устанавливаем куку, чтобы middleware пустила юзера
-    response.cookies.set('auth', 'true', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 60 * 60 * 24 * 7,
-      path: '/',
-    });
+    applySessionCookies(response, result.user.email);
 
     return response;
   } catch (err: any) {
     return NextResponse.json(
       { message: err.message || 'Ошибка авторизации' },
-      { status: 401 }, // 401 - Неавторизован
+      { status: 401 },
     );
   }
 }

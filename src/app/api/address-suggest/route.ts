@@ -1,39 +1,54 @@
+import { formatShortAddress } from '@/shared/utils/format-dadata-address';
 import { NextResponse } from 'next/server';
+
+type DadataSuggestion = {
+  value: string;
+  data: Parameters<typeof formatShortAddress>[0];
+};
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const q = searchParams.get('q')?.trim();
+    const apiKey = process.env.DADATA_API_KEY;
 
     if (!q || q.length < 3) {
       return NextResponse.json([]);
     }
 
-    const url = new URL('https://nominatim.openstreetmap.org/search');
-    url.searchParams.set('q', q);
-    url.searchParams.set('format', 'json');
-    url.searchParams.set('addressdetails', '1');
-    url.searchParams.set('limit', '6');
-    url.searchParams.set('countrycodes', 'ru');
+    if (!apiKey) {
+      console.warn('DADATA_API_KEY не задан — подсказки адресов недоступны');
+      return NextResponse.json([]);
+    }
 
-    const res = await fetch(url.toString(), {
+    const res = await fetch('https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address', {
+      method: 'POST',
       headers: {
-        'User-Agent': 'PizzaMasterApp/1.0',
+        'Content-Type': 'application/json',
         Accept: 'application/json',
+        Authorization: `Token ${apiKey}`,
       },
-      next: { revalidate: 3600 },
+      body: JSON.stringify({ query: q, count: 8 }),
     });
 
     if (!res.ok) {
       return NextResponse.json([]);
     }
 
-    const data = (await res.json()) as { display_name: string }[];
-    const suggestions = data.map((item) => item.display_name);
+    const json = (await res.json()) as { suggestions?: DadataSuggestion[] };
+    const seen = new Set<string>();
+    const suggestions: string[] = [];
+
+    for (const item of json.suggestions ?? []) {
+      const short = formatShortAddress(item.data);
+      if (!short || seen.has(short)) continue;
+      seen.add(short);
+      suggestions.push(short);
+    }
 
     return NextResponse.json(suggestions);
   } catch (error) {
-    console.error('Address suggest error:', error);
+    console.error('DaData address suggest error:', error);
     return NextResponse.json([]);
   }
 }

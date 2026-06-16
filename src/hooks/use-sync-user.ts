@@ -15,6 +15,7 @@ type FreshUser = {
   apartment?: string | null;
   numbering?: string | null;
   bonuses: number;
+  isAdmin?: boolean;
 };
 
 export const useSyncUser = (options?: { refetchInterval?: number }) => {

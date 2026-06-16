@@ -1,3 +1,4 @@
+import { requireAdminApi } from '@/shared/utils/require-admin-api';
 import { prisma } from '@/shared/utils/db';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
@@ -8,6 +9,9 @@ const supabase = createClient(
 );
 
 export async function POST(req: Request) {
+  const forbidden = await requireAdminApi();
+  if (forbidden) return forbidden;
+
   try {
     const formData = await req.formData();
     const name = formData.get('name') as string;

@@ -1,9 +1,10 @@
 'use client';
+import op from '@/assets/op.png';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { PageCard, PageCardAccent, PageShell } from '@/shared/ui/page-shell';
 import { useState } from 'react';
-import op from '@/assets/op.png'
 
 export const CorporateModule = () => {
   const [sent, setSent] = useState(false);
@@ -14,46 +15,47 @@ export const CorporateModule = () => {
   };
 
   return (
-    <div className='w-full min-h-screen bg-[#e8d8c9] py-[50px] px-[100px]'>
-      <div className='max-w-[900px] mx-auto flex flex-col gap-[30px]'>
-        <div className='bg-white rounded-[15px] border border-black p-[30px] shadow-grow'>
-          <h1 className='text-2xl mb-[15px]'>Корпоративные заказы</h1>
-          <p className='text-sm leading-6 mb-[15px]'>
-            Организуем питание для офиса, мероприятий и праздников. Скидки от 10 заказов, индивидуальное меню и
-            доставка в удобное время.
-          </p>
-          <ul className='text-sm flex flex-col gap-[6px] list-disc pl-[20px] mb-[20px]'>
-            <li>Наборы пицц и закусок для команды</li>
-            <li>Оплата по счёту для юрлиц</li>
-            <li>Персональный менеджер</li>
-            <li>Брендирование упаковки по запросу</li>
-          </ul>
+    <PageShell>
+      <PageCard>
+        <h1 className='text-lg sm:text-xl md:text-2xl mb-3 sm:mb-4'>Корпоративные заказы</h1>
+        <p className='text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4'>
+          Организуем питание для офиса, мероприятий и праздников. Скидки от 10 заказов, индивидуальное меню и
+          доставка в удобное время.
+        </p>
+        <ul className='text-xs sm:text-sm flex flex-col gap-1.5 sm:gap-2 list-disc pl-4 sm:pl-5 mb-4 sm:mb-5'>
+          <li>Наборы пицц и закусок для команды</li>
+          <li>Оплата по счёту для юрлиц</li>
+          <li>Персональный менеджер</li>
+          <li>Брендирование упаковки по запросу</li>
+        </ul>
 
-          <div className='w-full h-[200px] rounded-[10px] overflow-hidden border border-black mb-[25px]'>
-            <img
-              src={op.src}
-              alt="Корпоративный кейтеринг"
-              className='w-full h-full object-cover'
-              loading="eager" 
-            />
-          </div>
+        <div className='w-full h-[160px] sm:h-[200px] rounded-[10px] overflow-hidden border border-black'>
+          <img src={op.src} alt='Корпоративный кейтеринг' className='w-full h-full object-cover' loading='eager' />
         </div>
+      </PageCard>
 
-        <form
-          onSubmit={handleSubmit}
-          className='bg-[#FFF3E6] rounded-[15px] border border-black p-[25px] flex flex-col gap-[12px]'>
-          <h2 className='font-medium'>Оставить заявку</h2>
-          <Input placeholder='Название компании' required />
-          <Input placeholder='Контактное лицо' required />
-          <Input type='email' placeholder='Email' required />
-          <Input type='tel' placeholder='Телефон' required />
-          <Textarea placeholder='Количество человек, дата, пожелания...' className='min-h-[100px]' required />
-          <Button type='submit' className='w-[200px] border border-black cursor-pointer hover:bg-[#FDB4B4]/30'>
+      <form onSubmit={handleSubmit} className='contents'>
+        <PageCardAccent className='flex flex-col gap-3 sm:gap-4'>
+          <h2 className='font-medium text-sm sm:text-base'>Оставить заявку</h2>
+          <Input placeholder='Название компании' required className='text-sm w-full' />
+          <Input placeholder='Контактное лицо' required className='text-sm w-full' />
+          <Input type='email' placeholder='Email' required className='text-sm w-full' />
+          <Input type='tel' placeholder='Телефон' required className='text-sm w-full' />
+          <Textarea
+            placeholder='Количество человек, дата, пожелания...'
+            className='min-h-[90px] sm:min-h-[100px] text-sm w-full'
+            required
+          />
+          <Button
+            type='submit'
+            className='w-full sm:w-auto sm:min-w-[200px] border border-black cursor-pointer hover:bg-[#FDB4B4]/30 text-sm'>
             Отправить заявку
           </Button>
-          {sent && <p className='text-xs text-green-700'>Заявка отправлена! Мы свяжемся с вами в ближайшее время.</p>}
-        </form>
-      </div>
-    </div>
+          {sent && (
+            <p className='text-xs text-green-700'>Заявка отправлена! Мы свяжемся с вами в ближайшее время.</p>
+          )}
+        </PageCardAccent>
+      </form>
+    </PageShell>
   );
 };

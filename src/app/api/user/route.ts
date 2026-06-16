@@ -1,3 +1,4 @@
+import { isAdminEmail } from '@/shared/utils/admin';
 import { prisma } from '@/shared/utils/db';
 import { NextResponse } from 'next/server';
 
@@ -28,7 +29,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Пользователь не найден' }, { status: 404 });
     }
 
-    return NextResponse.json(user);
+    return NextResponse.json({ ...user, isAdmin: isAdminEmail(user.email) });
   } catch (error) {
     console.error('Ошибка при получении пользователя:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

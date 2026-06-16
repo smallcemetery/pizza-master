@@ -12,16 +12,26 @@ const PUBLIC_PATHS = [
   '/registration',
 ];
 
-const AUTH_ONLY_PATHS = ['/profile', '/admin'];
-
 export function middleware(request: NextRequest) {
   const isAuth = request.cookies.get('auth')?.value === 'true';
+  const isAdmin = request.cookies.get('admin')?.value === 'true';
   const { pathname } = request.nextUrl;
 
   const isPublicPage = PUBLIC_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
-  const needsAuth = AUTH_ONLY_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
 
-  if (needsAuth && !isAuth) {
+  if (pathname.startsWith('/admin')) {
+    if (!isAuth) {
+      const loginUrl = new URL('/authorization', request.url);
+      loginUrl.searchParams.set('next', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    if (!isAdmin) {
+      return NextResponse.redirect(new URL('/home', request.url));
+    }
+    return NextResponse.next();
+  }
+
+  if (pathname.startsWith('/profile') && !isAuth) {
     const loginUrl = new URL('/authorization', request.url);
     loginUrl.searchParams.set('next', pathname);
     return NextResponse.redirect(loginUrl);

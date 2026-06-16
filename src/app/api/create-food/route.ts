@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { requireAdminApi } from '@/shared/utils/require-admin-api';
 import { prisma } from '@/shared/utils/db';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
@@ -10,6 +11,9 @@ const supabase = createClient(
 );
 
 export async function POST(req: Request) {
+  const forbidden = await requireAdminApi();
+  if (forbidden) return forbidden;
+
   try {
     // 1. Получаем данные из FormData
     const formData = await req.formData();

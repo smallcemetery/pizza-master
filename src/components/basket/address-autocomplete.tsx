@@ -69,7 +69,7 @@ export const AddressAutocomplete = ({ value, onChange, placeholder, className }:
         value={value}
         onChange={(e) => handleChange(e.target.value)}
         onFocus={() => suggestions.length > 0 && setOpen(true)}
-        placeholder={placeholder ?? 'Начните вводить адрес…'}
+        placeholder={placeholder ?? 'г. Оренбург ул. Орлова 5'}
         className={className}
         autoComplete='street-address'
       />

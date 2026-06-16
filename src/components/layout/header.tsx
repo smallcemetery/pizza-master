@@ -45,9 +45,11 @@ export const Header = () => {
             <Link href='/profile' className='hover:underline underline-offset-4 hover:text-[#FDB4B4] max-w-[180px] truncate'>
               {user.email}
             </Link>
-            <Link href='/admin' className='hover:underline underline-offset-4 text-xs'>
-              Админ
-            </Link>
+            {user.isAdmin && (
+              <Link href='/admin' className='hover:underline underline-offset-4 text-xs'>
+                Админ
+              </Link>
+            )}
           </>
         ) : (
           <>
@@ -85,9 +87,11 @@ export const Header = () => {
               <Link href='/profile' className='py-1 truncate' onClick={() => setMenuOpen(false)}>
                 {user.email}
               </Link>
-              <Link href='/admin' className='py-1' onClick={() => setMenuOpen(false)}>
-                Админ-панель
-              </Link>
+              {user.isAdmin && (
+                <Link href='/admin' className='py-1' onClick={() => setMenuOpen(false)}>
+                  Админ-панель
+                </Link>
+              )}
             </>
           ) : (
             <>

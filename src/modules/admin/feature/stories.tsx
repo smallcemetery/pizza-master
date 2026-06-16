@@ -30,7 +30,7 @@ export const Stories = () => {
   };
 
   return (
-    <div className='w-full h-full flex justify-between items-center px-[40px] gap-[40px]'>
+    <div className='w-full h-full flex flex-col lg:flex-row justify-center items-center px-2 sm:px-6 gap-4 sm:gap-8 py-2'>
       <form className='flex flex-col gap-[10px] items-center' onSubmit={handleSubmit(onSubmit)}>
         <div className='relative w-[180px] h-[280px] group'>
           <input type='file' accept='image/*' className='absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10' {...register('image', { required: true })} />
@@ -46,7 +46,7 @@ export const Stories = () => {
 
       <div className='w-[180px] h-[280px] border-2 border-black rounded-[15px] overflow-hidden bg-[#FFF3E6] flex flex-col shadow-grow'>
         {preview.imageUrl ? (
-          <Image src={preview.imageUrl} alt='' width={180} height={220} className='w-full h-[220px] object-cover' />
+          <Image src={preview.imageUrl} alt='' width={180} height={220} className='w-full h-[180px] sm:h-[220px] object-contain bg-[#e8d8c9]' />
         ) : (
           <div className='w-full h-[220px] bg-[#FDB4B4]/30 flex items-center justify-center text-4xl'>🍕</div>
         )}

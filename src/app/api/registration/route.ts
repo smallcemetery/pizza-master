@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { applySessionCookies } from '@/shared/utils/auth-cookies';
+import { sanitizeUser } from '@/shared/utils/admin';
 import { NextResponse } from 'next/server';
 import { registerController } from './controller';
 
@@ -7,15 +9,15 @@ export async function POST(request: Request) {
     const body = await request.json();
     const result = await registerController.register(body);
 
-    const response = NextResponse.json(result, { status: 201 });
+    const response = NextResponse.json(
+      {
+        ...result,
+        user: sanitizeUser(result.user),
+      },
+      { status: 201 },
+    );
 
-    // ЗАПИСЫВАЕМ КУКУ
-    response.cookies.set('auth', 'true', {
-      httpOnly: true, // чтобы нельзя было украсть через JS
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 60 * 60 * 24 * 7, // 7 дней
-      path: '/',
-    });
+    applySessionCookies(response, result.user.email);
 
     return response;
   } catch (err: any) {
