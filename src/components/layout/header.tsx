@@ -17,13 +17,13 @@ export const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className='w-full min-h-[56px] sm:min-h-[60px] flex items-center justify-between gap-2 px-3 min-[375px]:px-4 min-[425px]:px-5 md:px-8 lg:px-12 xl:px-[100px] bg-[#e8d8c9] border-b border-black/10 sticky top-0 z-40'>
+    <header className='w-full min-h-[52px] sm:min-h-[60px] flex items-center justify-between gap-1.5 sm:gap-2 px-2 min-[375px]:px-4 min-[425px]:px-5 md:px-8 lg:px-12 xl:px-[100px] bg-[#e8d8c9] border-b border-black/10 sticky top-0 z-40'>
       <Link href='/home' className='flex items-center gap-2 min-w-0 shrink' onClick={() => setMenuOpen(false)}>
         <div className='w-9 h-9 shrink-0 overflow-hidden rounded-full border border-black/20 bg-white'>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={LOGO_SRC} alt='' className='w-full h-full object-cover' onError={(e) => { e.currentTarget.src = ''; e.currentTarget.alt = '🍕'; }} />
         </div>
-        <span className='font-medium text-sm min-[375px]:text-base truncate max-w-[120px] min-[425px]:max-w-none'>
+        <span className='font-medium text-xs min-[375px]:text-sm sm:text-base truncate max-w-[90px] min-[375px]:max-w-[120px] min-[425px]:max-w-none'>
           {SITE_NAME}
         </span>
       </Link>

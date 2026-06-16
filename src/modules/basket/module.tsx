@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
+import { AddressAutocomplete } from '@/components/basket/address-autocomplete';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useSyncUser } from '@/hooks/use-sync-user';
+import { checkoutDraftAtom } from '@/store/checkout';
 import { showSnakeGameAtom } from '@/store/game';
 import { userAtom } from '@/store/user';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -22,6 +24,7 @@ export const BasketModule = () => {
   const { bonuses: syncedBonuses } = useSyncUser();
   const setUser = useSetAtom(userAtom);
   const setShowSnake = useSetAtom(showSnakeGameAtom);
+  const setCheckoutDraft = useSetAtom(checkoutDraftAtom);
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data, isLoading, isGuest } = useBasketData();
@@ -42,7 +45,7 @@ export const BasketModule = () => {
     return parts.join(', ');
   }, [user]);
 
-  const [addressChoice, setAddressChoice] = useState<'saved' | 'new'>('saved');
+  const [addressChoice, setAddressChoice] = useState<'saved' | 'new'>(savedAddress ? 'saved' : 'new');
 
   const subtotal =
     data?.items?.reduce((sum: number, item: any) => sum + item.food.price * item.quantity, 0) ?? 0;
@@ -115,6 +118,28 @@ export const BasketModule = () => {
         return;
       }
     }
+
+    const address =
+      deliveryType === 'pickup'
+        ? 'Самовывоз'
+        : addressChoice === 'saved'
+          ? savedAddress || customAddress
+          : customAddress;
+
+    if (paymentMethod === 'card') {
+      setCheckoutDraft({
+        deliveryType,
+        deliveryTime,
+        paymentMethod: 'card',
+        bonusUsed: appliedBonus,
+        address,
+        subtotal,
+        total,
+      });
+      router.push('/basket/payment');
+      return;
+    }
+
     placeOrder.mutate();
   };
 
@@ -127,9 +152,9 @@ export const BasketModule = () => {
   }
 
   return (
-    <div className='w-full min-h-screen bg-[#e8d8c9] flex flex-col lg:flex-row px-3 min-[375px]:px-4 min-[425px]:px-5 md:px-8 lg:px-12 xl:px-[100px] gap-5 md:gap-8 py-6 md:py-10'>
+    <div className='w-full min-h-screen bg-[#e8d8c9] flex flex-col lg:flex-row px-2 min-[375px]:px-4 min-[425px]:px-5 md:px-8 lg:px-12 xl:px-[100px] gap-4 sm:gap-5 md:gap-8 py-4 sm:py-6 md:py-10'>
       <div className='flex-1 flex flex-col gap-4 min-w-0'>
-        <h1 className='text-lg md:text-xl'>Корзина</h1>
+        <h1 className='text-base sm:text-lg md:text-xl'>Корзина</h1>
         {isGuest && (data?.items?.length ?? 0) > 0 && (
           <p className='text-xs sm:text-sm bg-amber-50 border border-amber-300 rounded-lg px-3 py-2'>
             Вы просматриваете корзину как гость. Для оформления заказа{' '}
@@ -239,11 +264,11 @@ export const BasketModule = () => {
               Другой адрес
             </label>
             {addressChoice === 'new' && (
-              <Input
-                placeholder='Город, улица, дом, квартира'
+              <AddressAutocomplete
                 value={customAddress}
-                onChange={(e) => setCustomAddress(e.target.value)}
-                className='text-sm'
+                onChange={setCustomAddress}
+                placeholder='Город, улица, дом, квартира'
+                className='text-xs sm:text-sm'
               />
             )}
           </div>
@@ -308,7 +333,9 @@ export const BasketModule = () => {
               ? 'Войти для оформления'
               : placeOrder.isPending
                 ? 'Оформляем...'
-                : 'Оформить заказ'}
+                : paymentMethod === 'card'
+                  ? 'Перейти к оплате'
+                  : 'Оформить заказ'}
           </Button>
           {(checkoutError || placeOrder.isError) && (
             <p className='text-xs text-red-600 mt-2 break-words'>{checkoutError || 'Ошибка оформления'}</p>

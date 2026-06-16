@@ -37,10 +37,10 @@ export const HomeModule = () => {
   return (
     <div className='flex flex-col items-center w-full bg-[#e8d8c9] min-h-screen'>
       <SnakeGameOverlay />
-      <div className='w-full py-6 sm:py-8 md:py-10 flex justify-center px-2 min-[375px]:px-3'>
+      <div className='w-full py-4 sm:py-8 md:py-10 flex justify-center px-1 min-[375px]:px-3'>
         <ActionCarousel />
       </div>
-      <div className='w-full bg-[#FFF3E6] rounded-t-3xl py-4 sm:py-6 md:py-8 px-3 min-[375px]:px-4 md:px-6'>
+      <div className='w-full bg-[#FFF3E6] rounded-t-3xl py-3 sm:py-6 md:py-8 px-2 min-[375px]:px-4 md:px-6'>
         <div className='w-full max-w-[1000px] mx-auto flex flex-col gap-6 md:gap-10'>
           <div className='w-full flex flex-wrap gap-2 sm:gap-3 md:gap-4 justify-center sm:justify-start'>
             {tabs.map((name) => (
